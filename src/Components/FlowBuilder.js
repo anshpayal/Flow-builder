@@ -1,21 +1,22 @@
 import ReactFlow, {
   Controls,
   Background,
-  Handle,
   applyNodeChanges,
   applyEdgeChanges,
+  addEdge,
 } from "reactflow";
 import React, { useState, useCallback } from "react";
 import NodePanel from "./NodePanel";
+import SettingsPanel from "./SettingPanel";
 import "reactflow/dist/style.css";
 
-const initialEdges = [
-  { id: "1-2", source: "1", target: "2", type: "step" },
-];
+const initialEdges = [];
 
 function FlowBuilder() {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState(initialEdges);
+  const [selectedNode, setSelectedNode] = useState(null);
+
 
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -25,6 +26,20 @@ function FlowBuilder() {
     (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
     []
   );
+  const onConnect = useCallback(
+    (params) => {
+      // Check if there is already an edge from the source handle
+      const sourceHandleHasEdge = edges.some(
+        (edge) => edge.source === params.source && edge.sourceHandle === params.sourceHandle
+      );
+  
+      // If there is no edge from the source handle, add the new edge
+      if (!sourceHandleHasEdge) {
+        setEdges((eds) => addEdge(params, eds));
+      }
+    },
+    [edges],
+  )
 
   const onDragStart = (event, label) => {
     event.dataTransfer.setData("label", label);
@@ -50,13 +65,18 @@ function FlowBuilder() {
     event.preventDefault(); // Prevent default behavior to allow drop
   };
 
+  const updateNodeData = useCallback((id, data) => {
+    setNodes((ns) =>
+      ns.map((n) => (n.id === id ? { ...n, data: { ...n.data, ...data } } : n))
+    );
+  }, [])
+
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       <div
         style={{ width: "20%", backgroundColor: "#f0f0f0", padding: "10px" }}
       >
-        <NodePanel onDragStart={onDragStart} />
-        {/* You can add more controls or options for different node types here */}
+        {selectedNode ? <SettingsPanel selectedNode={selectedNode} updateNodeData={updateNodeData} /> : <NodePanel onDragStart={onDragStart} />}
       </div>
       <div
         style={{
@@ -73,6 +93,8 @@ function FlowBuilder() {
           onNodesChange={onNodesChange}
           edges={edges}
           onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onSelectionChange={elements => setSelectedNode(elements.find(e => e.type === 'default'))}
         >
           <Background />
           <Controls />

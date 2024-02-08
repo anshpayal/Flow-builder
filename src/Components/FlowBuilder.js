@@ -94,7 +94,7 @@ function FlowBuilder() {
           edges={edges}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          onSelectionChange={elements => setSelectedNode(elements.find(e => e.type === 'default'))}
+          onSelectionChange={element => setSelectedNode(element && element.type === 'default' ? element : null)}
         >
           <Background />
           <Controls />

@@ -1,15 +1,15 @@
 ### BiteSpeed Frontend Task: Chatbot flow builder
 
 🔥Features Completed:
-[x] Text Node
-[x] Node Panel
-[x] Edge
-[x] Source Handle
-[x] Traget Handle
+- [x] Text Node
+- [x] Node Panel
+- [x] Edge
+- [x] Source Handle
+- [x] Traget Handle
 
 👩‍💻Features I am Working ON:
-[] Setting Panel
-[] Save flow.
+- [ ] Setting Panel
+- [ ] Save flow.
 
 Step To Create Project:
 
